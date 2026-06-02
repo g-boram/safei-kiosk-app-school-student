@@ -1,0 +1,93 @@
+name: safei_kiosk_app_school_student
+description: "A new Flutter project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # CSS
+  cupertino_icons: ^1.0.8
+  dropdown_button2: ^2.3.9
+
+  # image, camera, video
+  video_player: ^2.9.2
+  chewie: ^1.8.1
+  file_picker: ^8.0.0
+  video_thumbnail: ^0.5.3
+  path_provider: ^2.1.4
+  audioplayers: ^5.2.1  # 오디오 권한
+  camera: ^0.11.0          # 카메라 미리보기/동영상 녹화
+  record: ^6.1.2           # 오디오 녹음
+  flutter_ringtone_player: ^4.0.0
+
+  # 상태관리
+  flutter_riverpod: ^2.5.0
+
+  # 권한
+  permission_handler: ^12.0.1
+  connectivity_plus: ^6.0.0
+
+  # Data
+  dio: ^5.9.0
+  pretty_dio_logger: ^1.3.1
+  freezed_annotation: ^3.1.0
+  json_annotation: ^4.9.0
+  flutter_secure_storage: ^9.2.4
+  xml: ^6.5.0
+  crypto: ^3.0.3
+
+  # Device
+  device_info_plus: ^11.1.0       # 기기/OS 정보
+  uuid: ^4.0.0
+
+  # 내부 앱 실행
+  url_launcher: ^6.3.0
+  android_intent_plus: ^5.0.2
+
+  #Route
+  go_router: ^17.0.0
+
+  #svg
+  flutter_svg: ^2.0.10
+
+  #Other
+  easy_localization: ^3.0.5 # 다국어처리
+  intl: ^0.20.2
+  webview_flutter: ^4.13.0 # 웹뷰
+  wakelock_plus: ^1.2.8 # 키오스크 꺼짐 제어
+  flutter_launcher_icons: ^0.14.4
+  saf: ^1.0.4  # USB 인식 드라이버
+  package_info_plus: ^8.0.0   # 앱 현재 버전 조회
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+  build_runner: ^2.9.0
+  json_serializable: ^6.9.0
+
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+    - assets/translations/
+    - assets/icons/
+    - assets/images/
+
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/icons/app_icon.png"
+  adaptive_icon_foreground: "assets/icons/app_icon.png"
+  adaptive_icon_background: "#FF547F"
