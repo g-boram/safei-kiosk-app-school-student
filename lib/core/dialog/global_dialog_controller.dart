@@ -19,6 +19,19 @@ class GlobalDialogController extends StateNotifier<GlobalDialogState?> {
     );
   }
 
+  void showMessage({
+    required String title,
+    required String message,
+    String confirmText = '확인',
+  }) {
+    state = GlobalDialogState(
+      title: title,
+      message: message,
+      confirmText: confirmText,
+      type: GlobalDialogType.normal,
+    );
+  }
+
   void clear() {
     state = null;
   }
@@ -38,4 +51,4 @@ class GlobalDialogState {
   });
 }
 
-enum GlobalDialogType { loginRequired }
+enum GlobalDialogType { loginRequired, normal }

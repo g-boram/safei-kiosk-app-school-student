@@ -45,65 +45,71 @@ class AppShell extends ConsumerWidget {
       );
     });
 
-    return Scaffold(
-      appBar: AppBar(
-        titleSpacing: 24,
-        title: Row(
-          children: [Image.asset('assets/images/logo.png', height: 32)],
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              // TODO: 테마 변경 연결
-            },
-            icon: const Icon(Icons.dark_mode),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          titleSpacing: 24,
+          title: Row(
+            children: [Image.asset('assets/images/logo.png', height: 32)],
           ),
-          IconButton(
-            onPressed: () {
-              // TODO: 다국어 변경 연결
-            },
-            icon: const Icon(Icons.language),
-          ),
-          TextButton(
-            onPressed: () async {
-              if (isLoggedIn) {
-                await ref.read(authControllerProvider.notifier).logout();
+          actions: [
+            IconButton(
+              onPressed: () {
+                // TODO: 테마 변경 연결
+              },
+              icon: const Icon(Icons.dark_mode),
+            ),
+            IconButton(
+              onPressed: () {
+                // TODO: 다국어 변경 연결
+              },
+              icon: const Icon(Icons.language),
+            ),
+            TextButton(
+              onPressed: () async {
+                if (isLoggedIn) {
+                  await ref.read(authControllerProvider.notifier).logout();
 
-                if (context.mounted) {
-                  context.go(AppPath.home);
+                  if (context.mounted) {
+                    context.go(AppPath.home);
+                  }
+
+                  return;
                 }
 
-                return;
-              }
-
-              context.go(AppPath.login);
-            },
-            child: Text(isLoggedIn ? '로그아웃' : '로그인'),
-          ),
-          const SizedBox(width: 16),
-        ],
-      ),
-      body: child,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _getCurrentIndex(context),
-        onTap: (index) {
-          switch (index) {
-            case 0:
-              context.go(AppPath.home);
-              break;
-            case 1:
-              context.go(AppPath.login);
-              break;
-            case 2:
-              context.go(AppPath.profile);
-              break;
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: '홈'),
-          BottomNavigationBarItem(icon: Icon(Icons.login), label: '로그인'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: '프로필'),
-        ],
+                context.go(AppPath.login);
+              },
+              child: Text(isLoggedIn ? '로그아웃' : '로그인'),
+            ),
+            const SizedBox(width: 16),
+          ],
+        ),
+        body: child,
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: _getCurrentIndex(context),
+          onTap: (index) {
+            switch (index) {
+              case 0:
+                context.go(AppPath.home);
+                break;
+              case 1:
+                context.go(AppPath.login);
+                break;
+              case 2:
+                context.go(AppPath.profile);
+                break;
+            }
+          },
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: '홈'),
+            BottomNavigationBarItem(icon: Icon(Icons.login), label: '로그인'),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: '프로필'),
+          ],
+        ),
       ),
     );
   }
