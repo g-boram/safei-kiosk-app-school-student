@@ -1,76 +1,108 @@
 // lib/core/layout/app_shell.dart
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../auth/auth_controller.dart';
+import '../auth/auth_state.dart';
+import '../dialog/global_alert_dialog.dart';
+import '../dialog/global_dialog_controller.dart';
 import '../router/app_routes.dart';
 
-class AppShell extends StatelessWidget {
+class AppShell extends ConsumerWidget {
   const AppShell({super.key, required this.child});
 
   final Widget child;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authControllerProvider);
+    final isLoggedIn = authState.status == AuthStatus.authenticated;
+
+    ref.listen(globalDialogControllerProvider, (previous, next) {
+      if (next == null) return;
+
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) {
+          return GlobalAlertDialog(
+            title: next.title,
+            message: next.message,
+            confirmText: next.confirmText,
+            onConfirm: () {
+              Navigator.of(context).pop();
+
+              ref.read(globalDialogControllerProvider.notifier).clear();
+
+              if (next.type == GlobalDialogType.loginRequired) {
+                context.go(AppPath.login);
+              }
+            },
+          );
+        },
+      );
+    });
+
     return Scaffold(
-      // 전역 상단 앱바
       appBar: AppBar(
         titleSpacing: 24,
         title: Row(
-          children: [
-            // 왼쪽 로고 영역
-            Image.asset('assets/images/logo.png', height: 32),
-            const SizedBox(width: 12),
-            const Text('SAFE-i'),
-          ],
+          children: [Image.asset('assets/images/logo.png', height: 32)],
         ),
         actions: [
-          // 테마 버튼 예시
           IconButton(
             onPressed: () {
               // TODO: 테마 변경 연결
             },
             icon: const Icon(Icons.dark_mode),
           ),
-
-          // 다국어 버튼 예시
           IconButton(
             onPressed: () {
               // TODO: 다국어 변경 연결
             },
             icon: const Icon(Icons.language),
           ),
-
-          // 로그인 화면 이동 버튼
           TextButton(
-            onPressed: () {
+            onPressed: () async {
+              if (isLoggedIn) {
+                await ref.read(authControllerProvider.notifier).logout();
+
+                if (context.mounted) {
+                  context.go(AppPath.home);
+                }
+
+                return;
+              }
+
               context.go(AppPath.login);
             },
-            child: const Text('로그인'),
+            child: Text(isLoggedIn ? '로그아웃' : '로그인'),
           ),
-
           const SizedBox(width: 16),
         ],
       ),
-
-      // 실제 페이지 화면
       body: child,
-
-      // 전역 하단 네비게이션
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _getCurrentIndex(context),
         onTap: (index) {
-          if (index == 0) {
-            context.go(AppPath.home);
-          }
-
-          if (index == 1) {
-            context.go(AppPath.login);
+          switch (index) {
+            case 0:
+              context.go(AppPath.home);
+              break;
+            case 1:
+              context.go(AppPath.login);
+              break;
+            case 2:
+              context.go(AppPath.profile);
+              break;
           }
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: '홈'),
           BottomNavigationBarItem(icon: Icon(Icons.login), label: '로그인'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: '프로필'),
         ],
       ),
     );
@@ -81,6 +113,10 @@ class AppShell extends StatelessWidget {
 
     if (location == AppPath.login) {
       return 1;
+    }
+
+    if (location == AppPath.profile) {
+      return 2;
     }
 
     return 0;
