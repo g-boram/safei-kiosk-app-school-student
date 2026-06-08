@@ -15,20 +15,33 @@ enum AuthStatus { unknown, unauthenticated, authenticated }
 ///
 /// Riverpod 상태로 사용됨
 class AuthState {
+  final AuthStatus status;
+  final String? accessToken;
+  final bool autoLogin;
+
+  // 로그인 성공 후 프로필에서 사용할 사용자 정보
+  final String? userId;
+  final String? userNm;
+  final String? loginId;
+  final String? email;
+  final String? insttId;
+  final String? insttNm;
+  final String? insttTy;
+  final String? userSeCd;
+
   const AuthState({
     required this.status,
     this.accessToken,
     this.autoLogin = false,
+    this.userId,
+    this.userNm,
+    this.loginId,
+    this.email,
+    this.insttId,
+    this.insttNm,
+    this.insttTy,
+    this.userSeCd,
   });
-
-  /// 현재 로그인 상태
-  final AuthStatus status;
-
-  /// 로그인 성공 후 받은 토큰
-  final String? accessToken;
-
-  /// 자동로그인 체크 여부
-  final bool autoLogin;
 
   /// 앱 시작 직후
   factory AuthState.unknown() {
@@ -44,23 +57,27 @@ class AuthState {
   factory AuthState.authenticated({
     required String accessToken,
     required bool autoLogin,
+    String? userId,
+    String? userNm,
+    String? loginId,
+    String? email,
+    String? insttId,
+    String? insttNm,
+    String? insttTy,
+    String? userSeCd,
   }) {
     return AuthState(
       status: AuthStatus.authenticated,
       accessToken: accessToken,
       autoLogin: autoLogin,
-    );
-  }
-
-  AuthState copyWith({
-    AuthStatus? status,
-    String? accessToken,
-    bool? autoLogin,
-  }) {
-    return AuthState(
-      status: status ?? this.status,
-      accessToken: accessToken ?? this.accessToken,
-      autoLogin: autoLogin ?? this.autoLogin,
+      userId: userId,
+      userNm: userNm,
+      loginId: loginId,
+      email: email,
+      insttId: insttId,
+      insttNm: insttNm,
+      insttTy: insttTy,
+      userSeCd: userSeCd,
     );
   }
 }

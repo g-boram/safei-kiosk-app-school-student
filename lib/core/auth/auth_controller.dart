@@ -54,18 +54,37 @@ class AuthController extends StateNotifier<AuthState> {
   }
 
   /// 로그인 성공
+  // lib/core/auth/auth_controller.dart
+
   Future<void> login({
     required String accessToken,
     required bool autoLogin,
+
+    // 프로필 화면에서 사용할 사용자 정보
+    String? userId,
+    String? userNm,
+    String? loginId,
+    String? email,
+    String? insttId,
+    String? insttNm,
+    String? insttTy,
+    String? userSeCd,
   }) async {
     state = AuthState.authenticated(
       accessToken: accessToken,
       autoLogin: autoLogin,
+      userId: userId,
+      userNm: userNm,
+      loginId: loginId,
+      email: email,
+      insttId: insttId,
+      insttNm: insttNm,
+      insttTy: insttTy,
+      userSeCd: userSeCd,
     );
 
     if (autoLogin) {
       await _storage.write(key: _tokenKey, value: accessToken);
-
       await _storage.write(key: _autoLoginKey, value: 'Y');
     }
   }

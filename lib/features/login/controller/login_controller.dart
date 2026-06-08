@@ -66,7 +66,19 @@ class LoginController extends StateNotifier<ApiState<LoginSuccessData>> {
         // AuthController에서 SecureStorage 저장 처리
         await ref
             .read(authControllerProvider.notifier)
-            .login(accessToken: user.accessToken, autoLogin: true);
+            .login(
+              accessToken: user.accessToken,
+              autoLogin: true,
+              // 로그인 성공 응답값을 AuthState에 저장
+              userId: user.userId,
+              userNm: user.userNm,
+              loginId: user.loginId,
+              email: user.email,
+              insttId: user.insttId,
+              insttNm: user.insttNm,
+              insttTy: user.insttTy,
+              userSeCd: user.userSeCd,
+            );
 
         // 성공 모달 제거
         // 화면에서 success=true를 받아

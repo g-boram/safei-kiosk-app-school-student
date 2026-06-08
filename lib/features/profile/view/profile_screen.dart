@@ -12,21 +12,66 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text('Profile Screen', style: TextStyle(fontSize: 24)),
+    final authState = ref.watch(authControllerProvider);
 
-          const SizedBox(height: 50),
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.grey.shade200),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 88,
+                  height: 88,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade200,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.person, size: 52, color: Colors.grey),
+                ),
+
+                const SizedBox(width: 20),
+
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        authState.userNm ?? '-',
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      const SizedBox(height: 6),
+
+                      Text(authState.insttNm ?? '-'),
+
+                      const SizedBox(height: 4),
+
+                      Text(authState.email ?? authState.loginId ?? '-'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 24),
 
           SizedBox(
-            width: 320,
+            height: 48,
             child: FilledButton.icon(
               onPressed: () async {
-                // 로그아웃하면 AuthStatus가 unauthenticated로 바뀜
-                // 현재 위치가 /profile이면 라우터가 "로그인 필요 화면"으로 판단할 수 있음
-                // 그래서 먼저 홈으로 이동시킨 뒤 로그아웃 처리
                 context.go(AppPath.home);
 
                 await ref.read(authControllerProvider.notifier).logout();
