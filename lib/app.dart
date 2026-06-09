@@ -6,13 +6,8 @@ import 'common/theme/app_colors.dart';
 import 'common/theme/app_typography.dart';
 import 'core/auth/auth_controller.dart';
 import 'core/router/app_router.dart';
-
-final lightTheme = ThemeData(
-  useMaterial3: true,
-  colorScheme: AppColors.lightScheme(),
-  fontFamily: 'Pretendard',
-  extensions: [AppTypography.basic(color: AppColors.gray700)],
-);
+import 'core/theme/app_theme.dart';
+import 'core/theme/theme_controller.dart';
 
 class App extends ConsumerWidget {
   const App({super.key});
@@ -23,9 +18,13 @@ class App extends ConsumerWidget {
     ref.watch(authControllerProvider);
     // ✔️ 라우팅
     final router = ref.watch(appRouterProvider);
+    // ✔️ 테마 설정
+    final themeState = ref.watch(themeControllerProvider);
 
     return MaterialApp.router(
-      theme: lightTheme,
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: themeState.themeMode,
       debugShowCheckedModeBanner: false,
       routerConfig: router,
 

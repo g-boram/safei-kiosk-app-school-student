@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:safei_kiosk_app_school_student/core/theme/theme_controller.dart';
 
 import '../auth/auth_controller.dart';
 import '../auth/auth_state.dart';
@@ -18,6 +19,8 @@ class AppShell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authControllerProvider);
+    final themeState = ref.watch(themeControllerProvider);
+    final isDark = themeState.isDark;
 
     // 로그인 성공 여부
     final isLoggedIn = authState.status == AuthStatus.authenticated;
@@ -60,10 +63,11 @@ class AppShell extends ConsumerWidget {
           ),
           actions: [
             IconButton(
+              tooltip: isDark ? '라이트 모드' : '다크 모드',
               onPressed: () {
-                // TODO: 테마 변경 연결
+                ref.read(themeControllerProvider.notifier).toggleTheme();
               },
-              icon: const Icon(Icons.dark_mode),
+              icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
             ),
 
             IconButton(

@@ -14,6 +14,9 @@ class ProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authControllerProvider);
 
+    // 현재 앱에 적용된 테마 정보
+    final theme = Theme.of(context);
+
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -22,9 +25,9 @@ class ProfileScreen extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.grey.shade200),
+              border: Border.all(color: theme.dividerColor),
             ),
             child: Row(
               children: [
@@ -32,10 +35,14 @@ class ProfileScreen extends ConsumerWidget {
                   width: 88,
                   height: 88,
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
+                    color: theme.colorScheme.primary.withOpacity(0.12),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.person, size: 52, color: Colors.grey),
+                  child: Icon(
+                    Icons.person,
+                    size: 52,
+                    color: theme.colorScheme.primary,
+                  ),
                 ),
 
                 const SizedBox(width: 20),
@@ -45,20 +52,33 @@ class ProfileScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        authState.userNm ?? '-',
-                        style: const TextStyle(
+                        authState.userNm ?? '',
+                        style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.onSurface,
                         ),
                       ),
 
                       const SizedBox(height: 6),
 
-                      Text(authState.insttNm ?? '-'),
+                      Text(
+                        authState.insttNm ?? '',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: theme.colorScheme.onSurface,
+                        ),
+                      ),
 
                       const SizedBox(height: 4),
 
-                      Text(authState.email ?? authState.loginId ?? '-'),
+                      Text(
+                        authState.email ?? authState.loginId ?? '',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: theme.colorScheme.onSurface.withOpacity(0.75),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -72,10 +92,8 @@ class ProfileScreen extends ConsumerWidget {
             height: 48,
             child: FilledButton.icon(
               onPressed: () async {
-                // 먼저 홈으로 이동
                 context.go(AppPath.home);
 
-                // AuthController가 토큰 + 사용자정보 삭제 담당
                 await ref.read(authControllerProvider.notifier).logout();
               },
               icon: const Icon(Icons.logout),
