@@ -16,6 +16,9 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
+  // 자동로그인 여부
+  bool _autoLogin = false;
+
   // 이메일 입력값 관리
   final _emailController = TextEditingController();
 
@@ -118,7 +121,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     // Riverpod Controller 호출
     final success = await ref
         .read(loginControllerProvider.notifier)
-        .loginWithEmail(loginId: loginId, password: password, loginTy: loginTy);
+        .loginWithEmail(
+          loginId: loginId,
+          password: password,
+          loginTy: loginTy,
+          autoLogin: _autoLogin,
+        );
 
     // 비동기 처리 후 화면이 이미 종료되었을 수 있음
     // dispose 된 화면에서 context 사용 방지
@@ -249,6 +257,24 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         )
                       : const Text('로그인'),
                 ),
+              ),
+
+              const SizedBox(height: 10),
+
+              Row(
+                children: [
+                  Checkbox(
+                    value: _autoLogin,
+                    onChanged: isLoading
+                        ? null
+                        : (value) {
+                            setState(() {
+                              _autoLogin = value ?? false;
+                            });
+                          },
+                  ),
+                  const Text('자동 로그인'),
+                ],
               ),
             ],
           ),

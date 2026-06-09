@@ -72,8 +72,10 @@ class ProfileScreen extends ConsumerWidget {
             height: 48,
             child: FilledButton.icon(
               onPressed: () async {
+                // 먼저 홈으로 이동
                 context.go(AppPath.home);
 
+                // AuthController가 토큰 + 사용자정보 삭제 담당
                 await ref.read(authControllerProvider.notifier).logout();
               },
               icon: const Icon(Icons.logout),

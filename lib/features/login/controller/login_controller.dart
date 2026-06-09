@@ -32,6 +32,9 @@ class LoginController extends StateNotifier<ApiState<LoginSuccessData>> {
     required String loginId,
     required String password,
     required String loginTy,
+
+    // 로그인 화면의 자동로그인 체크 여부
+    required bool autoLogin,
   }) async {
     // API 호출 시작 상태로 변경
     // 화면에서는 loading 상태를 보고 로딩바를 표시할 수 있음
@@ -62,14 +65,14 @@ class LoginController extends StateNotifier<ApiState<LoginSuccessData>> {
           message: message,
         );
 
-        // 토큰 저장
-        // AuthController에서 SecureStorage 저장 처리
+        // AuthController에서
+        // 로그인 상태 + SecureStorage 저장 처리
         await ref
             .read(authControllerProvider.notifier)
             .login(
               accessToken: user.accessToken,
-              autoLogin: true,
-              // 로그인 성공 응답값을 AuthState에 저장
+              autoLogin: autoLogin,
+
               userId: user.userId,
               userNm: user.userNm,
               loginId: user.loginId,
@@ -79,10 +82,6 @@ class LoginController extends StateNotifier<ApiState<LoginSuccessData>> {
               insttTy: user.insttTy,
               userSeCd: user.userSeCd,
             );
-
-        // 성공 모달 제거
-        // 화면에서 success=true를 받아
-        // 바로 Home으로 이동하게 됨
 
         return true;
       }
