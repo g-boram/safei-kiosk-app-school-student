@@ -65,7 +65,7 @@ dependencies:
   flutter_launcher_icons: ^0.14.4
   saf: ^1.0.4  # USB 인식 드라이버
   package_info_plus: ^8.0.0   # 앱 현재 버전 조회
-
+  qr_flutter: ^4.1.0
 
 dev_dependencies:
   flutter_test:
@@ -84,6 +84,7 @@ flutter:
   assets:
     - assets/translations/
     - assets/icons/
+    - assets/icons/profile/
     - assets/images/
 
 

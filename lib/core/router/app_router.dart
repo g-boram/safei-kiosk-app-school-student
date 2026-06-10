@@ -75,7 +75,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final isLoggedIn = authState.status == AuthStatus.authenticated;
       final loc = state.matchedLocation;
 
-      debugPrint('====== redirect ======');
+      debugPrint('====== Redirect ======');
       debugPrint('loc: $loc');
       debugPrint('authStatus: ${authState.status}');
       debugPrint('isLoggedIn: $isLoggedIn');

@@ -1,13 +1,13 @@
-// lib/features/profile/view/profile_screen.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../common/dialog/common_dim_dialog.dart';
 import '../../../core/auth/auth_controller.dart';
 import '../../../core/router/app_routes.dart';
 import '../../../core/theme/app_color_extension.dart';
 import '../../../core/theme/typography.dart';
+import '../component/profile_qr_dialog.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -15,6 +15,8 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authControllerProvider);
+
+    final loginId = authState.email ?? authState.loginId ?? '';
 
     return Padding(
       padding: const EdgeInsets.all(24),
@@ -52,7 +54,7 @@ class ProfileScreen extends ConsumerWidget {
                     children: [
                       Text(
                         authState.userNm ?? '',
-                        style: Typo.bodyLBold.copyWith(
+                        style: Typo.bodyMBold.copyWith(
                           color: context.colors.textPrimary,
                         ),
                       ),
@@ -61,7 +63,7 @@ class ProfileScreen extends ConsumerWidget {
 
                       Text(
                         authState.insttNm ?? '',
-                        style: Typo.bodyM.copyWith(
+                        style: Typo.bodyS.copyWith(
                           color: context.colors.textPrimary,
                         ),
                       ),
@@ -69,12 +71,40 @@ class ProfileScreen extends ConsumerWidget {
                       const SizedBox(height: 4),
 
                       Text(
-                        authState.email ?? authState.loginId ?? '',
+                        loginId,
                         style: Typo.bodyS.copyWith(
                           color: context.colors.textSecondary,
                         ),
                       ),
                     ],
+                  ),
+                ),
+
+                const SizedBox(width: 16),
+
+                InkWell(
+                  onTap: loginId.isEmpty
+                      ? null
+                      : () {
+                          CommonDimDialog.show(
+                            context: context,
+                            width: 420,
+                            child: ProfileQrDialog(loginId: loginId),
+                          );
+                        },
+                  borderRadius: BorderRadius.circular(16),
+                  child: Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      color: context.colors.primary100,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.qr_code_2,
+                      size: 36,
+                      color: context.colors.primary500,
+                    ),
                   ),
                 ),
               ],
