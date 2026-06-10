@@ -6,6 +6,20 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'theme_state.dart';
 
+/// ==================================================================
+///
+/// 라이트 / 다크 테마 상태를 관리하는 Controller입니다.
+///
+/// FlutterSecureStorage에 사용자가 선택한 테마를 저장하고,
+/// 앱 재실행 시 저장된 테마를 복원합니다.
+///
+/// 사용 예시:
+/// ref.read(themeControllerProvider.notifier).toggleTheme();
+/// ref.read(themeControllerProvider.notifier).setDarkTheme();
+/// ref.read(themeControllerProvider.notifier).setLightTheme();
+///
+/// ==================================================================
+
 final themeControllerProvider =
     StateNotifierProvider<ThemeController, ThemeState>((ref) {
       final controller = ThemeController();

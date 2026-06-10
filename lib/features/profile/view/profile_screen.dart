@@ -6,6 +6,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/auth/auth_controller.dart';
 import '../../../core/router/app_routes.dart';
+import '../../../core/theme/app_color_extension.dart';
+import '../../../core/theme/typography.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -13,9 +15,6 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authControllerProvider);
-
-    // 현재 앱에 적용된 테마 정보
-    final theme = Theme.of(context);
 
     return Padding(
       padding: const EdgeInsets.all(24),
@@ -25,9 +24,9 @@ class ProfileScreen extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: theme.colorScheme.surface,
+              color: context.colors.surface,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: theme.dividerColor),
+              border: Border.all(color: context.colors.border),
             ),
             child: Row(
               children: [
@@ -35,13 +34,13 @@ class ProfileScreen extends ConsumerWidget {
                   width: 88,
                   height: 88,
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.withOpacity(0.12),
+                    color: context.colors.primary100,
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     Icons.person,
                     size: 52,
-                    color: theme.colorScheme.primary,
+                    color: context.colors.primary500,
                   ),
                 ),
 
@@ -53,10 +52,8 @@ class ProfileScreen extends ConsumerWidget {
                     children: [
                       Text(
                         authState.userNm ?? '',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.onSurface,
+                        style: Typo.bodyLBold.copyWith(
+                          color: context.colors.textPrimary,
                         ),
                       ),
 
@@ -64,9 +61,8 @@ class ProfileScreen extends ConsumerWidget {
 
                       Text(
                         authState.insttNm ?? '',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: theme.colorScheme.onSurface,
+                        style: Typo.bodyM.copyWith(
+                          color: context.colors.textPrimary,
                         ),
                       ),
 
@@ -74,9 +70,8 @@ class ProfileScreen extends ConsumerWidget {
 
                       Text(
                         authState.email ?? authState.loginId ?? '',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: theme.colorScheme.onSurface.withOpacity(0.75),
+                        style: Typo.bodyS.copyWith(
+                          color: context.colors.textSecondary,
                         ),
                       ),
                     ],
@@ -97,7 +92,10 @@ class ProfileScreen extends ConsumerWidget {
                 await ref.read(authControllerProvider.notifier).logout();
               },
               icon: const Icon(Icons.logout),
-              label: const Text('로그아웃'),
+              label: Text(
+                '로그아웃',
+                style: Typo.bodySBold.copyWith(color: Colors.white),
+              ),
             ),
           ),
         ],

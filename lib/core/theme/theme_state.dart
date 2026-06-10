@@ -2,6 +2,15 @@
 
 import 'package:flutter/material.dart';
 
+/// ======================================================
+///
+/// 현재 앱의 ThemeMode 상태를 표현하는 State입니다.
+///
+/// ThemeMode.light 또는 ThemeMode.dark 값을 가집니다.
+/// MaterialApp.router의 themeMode에 연결됩니다.
+///
+/// ======================================================
+
 class ThemeState {
   final ThemeMode themeMode;
 
