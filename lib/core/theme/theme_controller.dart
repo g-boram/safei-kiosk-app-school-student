@@ -1,28 +1,14 @@
-// lib/core/theme/theme_controller.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
+import '../storage/local_storage.dart';
+import '../storage/storage_provider.dart';
 import 'theme_state.dart';
-
-/// ==================================================================
-///
-/// 라이트 / 다크 테마 상태를 관리하는 Controller입니다.
-///
-/// FlutterSecureStorage에 사용자가 선택한 테마를 저장하고,
-/// 앱 재실행 시 저장된 테마를 복원합니다.
-///
-/// 사용 예시:
-/// ref.read(themeControllerProvider.notifier).toggleTheme();
-/// ref.read(themeControllerProvider.notifier).setDarkTheme();
-/// ref.read(themeControllerProvider.notifier).setLightTheme();
-///
-/// ==================================================================
 
 final themeControllerProvider =
     StateNotifierProvider<ThemeController, ThemeState>((ref) {
-      final controller = ThemeController();
+      final localStorage = ref.watch(localStorageProvider);
+      final controller = ThemeController(localStorage);
 
       controller.initialize();
 
@@ -30,15 +16,12 @@ final themeControllerProvider =
     });
 
 class ThemeController extends StateNotifier<ThemeState> {
-  ThemeController() : super(ThemeState.light());
+  final LocalStorage _localStorage;
 
-  static const _storage = FlutterSecureStorage();
+  ThemeController(this._localStorage) : super(ThemeState.light());
 
-  static const _themeKey = 'APP_THEME_MODE';
-
-  /// 앱 시작 시 저장된 테마 설정 복원
   Future<void> initialize() async {
-    final savedTheme = await _storage.read(key: _themeKey);
+    final savedTheme = await _localStorage.readThemeMode();
 
     if (!mounted) return;
 
@@ -50,7 +33,6 @@ class ThemeController extends StateNotifier<ThemeState> {
     state = ThemeState.light();
   }
 
-  /// 라이트/다크 테마 전환
   Future<void> toggleTheme() async {
     if (state.isDark) {
       await setLightTheme();
@@ -59,18 +41,16 @@ class ThemeController extends StateNotifier<ThemeState> {
     }
   }
 
-  /// 라이트 테마 설정
   Future<void> setLightTheme() async {
-    await _storage.write(key: _themeKey, value: 'light');
+    await _localStorage.writeThemeMode('light');
 
     if (!mounted) return;
 
     state = ThemeState.light();
   }
 
-  /// 다크 테마 설정
   Future<void> setDarkTheme() async {
-    await _storage.write(key: _themeKey, value: 'dark');
+    await _localStorage.writeThemeMode('dark');
 
     if (!mounted) return;
 

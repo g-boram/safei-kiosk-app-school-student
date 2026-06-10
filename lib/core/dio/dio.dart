@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
-import '../storage/auth_storage_provider.dart';
+import '../storage/storage_provider.dart';
 import 'network.dart';
 
 final dioProvider = Provider<Dio>((ref) {
