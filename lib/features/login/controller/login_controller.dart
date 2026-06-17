@@ -1,6 +1,9 @@
 // lib/features/login/controller/login_controller.dart
 
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/auth/auth_controller.dart';
@@ -58,6 +61,8 @@ class LoginController extends StateNotifier<ApiState<LoginSuccessData>> {
       if (response.isSuccess && response.data != null) {
         final user = response.data!;
 
+        // debugPrint(const JsonEncoder.withIndent('  ').convert(user.toJson()));
+
         // 상태를 성공으로 변경
         state = ApiState<LoginSuccessData>(
           status: ApiStatus.success,
@@ -72,7 +77,6 @@ class LoginController extends StateNotifier<ApiState<LoginSuccessData>> {
             .login(
               accessToken: user.accessToken,
               autoLogin: autoLogin,
-
               userId: user.userId,
               userNm: user.userNm,
               loginId: user.loginId,

@@ -20,9 +20,8 @@ class AppShell extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authControllerProvider);
     final themeState = ref.watch(themeControllerProvider);
-    final isDark = themeState.isDark;
 
-    // 로그인 성공 여부
+    final isDark = themeState.isDark;
     final isLoggedIn = authState.status == AuthStatus.authenticated;
 
     ref.listen(globalDialogControllerProvider, (previous, next) {
@@ -71,13 +70,13 @@ class AppShell extends ConsumerWidget {
             ),
 
             IconButton(
+              tooltip: '언어 변경',
               onPressed: () {
                 // TODO: 다국어 변경 연결
               },
               icon: const Icon(Icons.language),
             ),
 
-            // 로그인 상태에 따라 상단 버튼 변경
             if (isLoggedIn)
               IconButton(
                 tooltip: '프로필',
@@ -100,19 +99,73 @@ class AppShell extends ConsumerWidget {
 
         body: child,
 
-        // 하단 영역은 홈만 표시
         bottomNavigationBar: BottomNavigationBar(
-          currentIndex: 0,
+          currentIndex: _getCurrentIndex(context),
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: Theme.of(context).colorScheme.primary,
+          unselectedItemColor: Colors.grey,
+          showSelectedLabels: true,
+          showUnselectedLabels: true,
           onTap: (index) {
-            context.go(AppPath.home);
+            switch (index) {
+              case 0:
+                context.go(AppPath.home);
+                break;
+              case 1:
+                context.go(AppPath.emotionHome);
+                break;
+              case 2:
+                context.go(AppPath.profile);
+                break;
+              case 3:
+                context.go(AppPath.setting);
+                break;
+            }
           },
           items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: '홈'),
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: '홈'),
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: '홈'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_outlined),
+              activeIcon: Icon(Icons.home),
+              label: '홈',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.mood_outlined),
+              activeIcon: Icon(Icons.mood),
+              label: '감정체크',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline),
+              activeIcon: Icon(Icons.person),
+              label: '프로필',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.settings_outlined),
+              activeIcon: Icon(Icons.settings),
+              label: '설정',
+            ),
           ],
         ),
       ),
     );
+  }
+
+  int _getCurrentIndex(BuildContext context) {
+    final location = GoRouterState.of(context).matchedLocation;
+
+    if (location == AppPath.emotionHome ||
+        location == AppPath.emotionSelect ||
+        location.startsWith('/emotion/level')) {
+      return 1;
+    }
+
+    if (location == AppPath.profile) {
+      return 2;
+    }
+
+    if (location == AppPath.setting) {
+      return 3;
+    }
+
+    return 0;
   }
 }

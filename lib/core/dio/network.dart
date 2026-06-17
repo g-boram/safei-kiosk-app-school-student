@@ -21,10 +21,10 @@ String resolveBaseUrl() {
 
   switch (currentEnv) {
     case AppEnv.prod:
-      return 'https://device.alkong.ai$base';
+      return 'https://safei.alkong.ai$base';
 
     case AppEnv.dev:
-      return 'https://dev-device.alkong.ai$base';
+      return 'https://dev-safei.alkong.ai$base';
 
     case AppEnv.local:
       if (Platform.isAndroid) {
