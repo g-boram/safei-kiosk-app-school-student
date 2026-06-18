@@ -61,22 +61,21 @@ class AppShell extends ConsumerWidget {
             children: [Image.asset('assets/images/logo.png', height: 32)],
           ),
           actions: [
-            IconButton(
-              tooltip: isDark ? '라이트 모드' : '다크 모드',
-              onPressed: () {
-                ref.read(themeControllerProvider.notifier).toggleTheme();
-              },
-              icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
-            ),
-
-            IconButton(
-              tooltip: '언어 변경',
-              onPressed: () {
-                // TODO: 다국어 변경 연결
-              },
-              icon: const Icon(Icons.language),
-            ),
-
+            // IconButton(
+            //   tooltip: isDark ? '라이트 모드' : '다크 모드',
+            //   onPressed: () {
+            //     ref.read(themeControllerProvider.notifier).toggleTheme();
+            //   },
+            //   icon: Icon(isDark ? Icons.light_mode : Icons.dark_mode),
+            // ),
+            //
+            // IconButton(
+            //   tooltip: '언어 변경',
+            //   onPressed: () {
+            //     // TODO: 다국어 변경 연결
+            //   },
+            //   icon: const Icon(Icons.language),
+            // ),
             if (isLoggedIn)
               IconButton(
                 tooltip: '프로필',

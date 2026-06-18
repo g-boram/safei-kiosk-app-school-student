@@ -3,7 +3,7 @@ import 'dart:io' show Platform;
 enum AppEnv { local, dev, prod }
 
 AppEnv get currentEnv {
-  const env = String.fromEnvironment('APP_ENV', defaultValue: 'prod');
+  const env = String.fromEnvironment('APP_ENV', defaultValue: 'dev');
 
   switch (env) {
     case 'prod':
