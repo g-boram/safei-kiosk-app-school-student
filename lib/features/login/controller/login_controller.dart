@@ -76,6 +76,7 @@ class LoginController extends StateNotifier<ApiState<LoginSuccessData>> {
             .read(authControllerProvider.notifier)
             .login(
               accessToken: user.accessToken,
+              refreshToken: user.refreshToken,
               autoLogin: autoLogin,
               userId: user.userId,
               userNm: user.userNm,

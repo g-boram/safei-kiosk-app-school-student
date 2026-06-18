@@ -116,7 +116,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final password = _passwordController.text.trim();
 
     // 서버 요구사항
-    final loginTy = 'STUDENT';
+    final loginTy = 'TEACHER';
 
     // Riverpod Controller 호출
     final success = await ref

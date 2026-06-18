@@ -87,6 +87,7 @@ flutter:
     - assets/icons/
     - assets/icons/profile/
     - assets/images/
+    - assets/images/emotion/
 
 
 flutter_launcher_icons:

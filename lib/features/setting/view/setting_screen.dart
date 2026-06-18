@@ -17,6 +17,8 @@ class SettingScreen extends ConsumerWidget {
       padding: const EdgeInsets.all(0),
       children: const [
         // Text('설정', style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
+        SizedBox(height: 10),
+
         SettingSection(title: '화면 설정', children: [SettingThemeTile()]),
 
         SizedBox(height: 10),

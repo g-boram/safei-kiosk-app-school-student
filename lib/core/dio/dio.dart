@@ -28,12 +28,18 @@ final dioProvider = Provider<Dio>((ref) {
         if (!noAuth) {
           final tokens = await authStorage.readTokens();
 
+          debugPrint('===== DIO TOKEN CHECK =====');
+          debugPrint('url: ${options.uri}');
+          debugPrint('hasTokens: ${tokens != null}');
+          debugPrint('===========================');
+
           if (tokens != null) {
             options.headers['Authorization'] = 'Bearer ${tokens.accessToken}';
             options.headers['Refresh-Token'] = tokens.refreshToken;
           }
         }
 
+        // 서버로 전달되지 않도록 내부 플래그 제거
         options.headers.remove('noAuth');
 
         handler.next(options);
@@ -52,8 +58,21 @@ final dioProvider = Provider<Dio>((ref) {
 
         handler.next(response);
       },
-      onError: (err, handler) {
+      onError: (err, handler) async {
         debugPrint('[DIO ERROR] ${err.message}');
+
+        // 에러 응답에도 갱신 토큰이 내려오는 경우 대비
+        final newAuth = err.response?.headers.value('Authorization');
+        final newRefresh = err.response?.headers.value('Refresh-Token');
+
+        if (newAuth != null && newAuth.isNotEmpty) {
+          await authStorage.writeAccessToken(_normalizeAccessToken(newAuth));
+        }
+
+        if (newRefresh != null && newRefresh.isNotEmpty) {
+          await authStorage.writeRefreshToken(newRefresh);
+        }
+
         handler.next(err);
       },
     ),
@@ -63,6 +82,7 @@ final dioProvider = Provider<Dio>((ref) {
     PrettyDioLogger(
       requestHeader: true,
       requestBody: true,
+      responseHeader: false,
       responseBody: true,
       error: true,
       compact: true,

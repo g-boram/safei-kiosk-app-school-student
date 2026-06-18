@@ -1,13 +1,13 @@
-# Storage 시스템 가이드
+# Storage & Authentication 시스템 가이드
 
 ## 개요
 
 프로젝트에서는 저장되는 데이터의 성격에 따라 두 가지 저장소를 사용한다.
 
-| 저장소                  | 용도                    |
-| -------------------- | --------------------- |
-| FlutterSecureStorage | 인증 정보, 토큰 등 민감 정보     |
-| SharedPreferences    | 사용자 설정, UI 상태 등 일반 정보 |
+| 저장소                  | 용도             |
+| -------------------- | -------------- |
+| FlutterSecureStorage | 인증 정보 및 사용자 정보 |
+| SharedPreferences    | 사용자 설정 및 UI 상태 |
 
 ---
 
@@ -28,23 +28,23 @@ lib/core/storage/
 
 민감한 인증 정보를 안전하게 저장하기 위한 저장소
 
-Android에서는 EncryptedSharedPreferences 기반으로 암호화되어 저장된다.
+Android에서는 암호화된 저장소를 사용하며 앱 재실행 후에도 데이터가 유지된다.
 
 현재 저장 대상
 
 ```txt
-accessToken
-refreshToken
-username
-```
+ACCESS_TOKEN
+REFRESH_TOKEN
+AUTO_LOGIN
 
-예시
-
-```dart
-await authStorage.writeTokens(
-  accessToken: accessToken,
-  refreshToken: refreshToken,
-);
+USER_ID
+USER_NM
+LOGIN_ID
+EMAIL
+INSTT_ID
+INSTT_NM
+INSTT_TY
+USER_SE_CD
 ```
 
 ---
@@ -56,11 +56,12 @@ await authStorage.writeTokens(
 * 암호화 저장
 * 인증 정보 보관에 적합
 * 앱 재실행 후에도 유지
+* 사용자 정보 복원 가능
 
 ### 단점
 
 * 일반 설정 저장에는 과함
-* 읽기/쓰기 속도가 SharedPreferences보다 느림
+* SharedPreferences보다 상대적으로 느림
 
 ---
 
@@ -69,8 +70,13 @@ await authStorage.writeTokens(
 ```dart
 final authStorage = ref.read(authStorageProvider);
 
-await authStorage.writeAccessToken(token);
+await authStorage.writeTokens(
+  accessToken: accessToken,
+  refreshToken: refreshToken,
+);
+```
 
+```dart
 final tokens = await authStorage.readTokens();
 ```
 
@@ -80,14 +86,14 @@ final tokens = await authStorage.readTokens();
 
 ## 목적
 
-사용자 설정 및 일반 상태 저장
+사용자 설정 및 UI 상태 저장
 
 민감하지 않은 데이터를 저장하기 위해 사용한다.
 
 현재 저장 대상
 
 ```txt
-PROFILE_ICON
+PROFILE_ICON_<loginId>
 APP_THEME_MODE
 ```
 
@@ -121,12 +127,13 @@ NOTIFICATION_ENABLED
 
 ```dart
 await localStorage.writeProfileIcon(
-  'assets/icons/profile/profile_01.svg',
+  loginId,
+  'assets/icons/profile/satisfaction.svg',
 );
 ```
 
 ```dart
-final icon = await localStorage.readProfileIcon();
+final icon = await localStorage.readProfileIcon(loginId);
 ```
 
 ---
@@ -135,46 +142,90 @@ final icon = await localStorage.readProfileIcon();
 
 ## 역할
 
-FlutterSecureStorage를 이용하여 인증 정보를 관리한다.
+FlutterSecureStorage를 이용하여 인증 정보 및 사용자 정보를 관리한다.
 
-관리 대상
+---
+
+## 관리 대상
 
 ```txt
-accessToken
-refreshToken
-username
+ACCESS_TOKEN
+REFRESH_TOKEN
+AUTO_LOGIN
+
+USER_ID
+USER_NM
+LOGIN_ID
+EMAIL
+INSTT_ID
+INSTT_NM
+INSTT_TY
+USER_SE_CD
 ```
 
-주요 함수
+---
+
+## 주요 함수
 
 ```dart
 writeTokens()
+writeAccessToken()
+writeRefreshToken()
+
 readTokens()
-writeUsername()
-readUsername()
+
+writeLoginInfo()
+readLoginInfo()
+
 clear()
 ```
 
 ---
 
-## 동작 예시
-
-로그인 성공
+## 로그인 저장 흐름
 
 ```txt
 로그인 성공
-→ accessToken 저장
-→ refreshToken 저장
-→ username 저장
+↓
+AuthStorage.writeLoginInfo()
+↓
+ACCESS_TOKEN 저장
+REFRESH_TOKEN 저장
+AUTO_LOGIN 저장
+사용자 정보 저장
 ```
 
-로그아웃
+---
+
+## 자동로그인 복원 흐름
+
+```txt
+앱 실행
+↓
+AuthController.initialize()
+↓
+AuthStorage.readLoginInfo()
+↓
+AUTO_LOGIN 확인
+↓
+사용자 정보 조회
+↓
+로그인 상태 복원
+```
+
+---
+
+## 로그아웃 흐름
 
 ```txt
 로그아웃
-→ accessToken 삭제
-→ refreshToken 삭제
-→ username 삭제
+↓
+AuthStorage.clear()
+↓
+ACCESS_TOKEN 삭제
+REFRESH_TOKEN 삭제
+AUTO_LOGIN 삭제
+사용자 정보 삭제
 ```
 
 ---
@@ -185,10 +236,12 @@ clear()
 
 SharedPreferences를 이용하여 일반 설정을 관리한다.
 
-관리 대상
+---
+
+## 관리 대상
 
 ```txt
-PROFILE_ICON
+PROFILE_ICON_<loginId>
 APP_THEME_MODE
 ```
 
@@ -212,27 +265,15 @@ writeThemeMode()
 
 ---
 
-## 동작 예시
-
-프로필 아이콘 변경
-
-```txt
-아이콘 선택
-→ SharedPreferences 저장
-→ 앱 종료
-→ 앱 재실행
-→ 저장된 아이콘 복원
-```
-
----
-
 # storage_provider.dart
 
 ## 역할
 
-Storage 객체를 Riverpod에서 사용할 수 있도록 Provider 등록
+Storage 객체를 Riverpod Provider로 등록한다.
 
-현재 제공 Provider
+---
+
+## 제공 Provider
 
 ```dart
 flutterSecureStorageProvider
@@ -245,13 +286,11 @@ localStorageProvider
 ## 사용 예시
 
 ```dart
-final authStorage =
-    ref.read(authStorageProvider);
+final authStorage = ref.read(authStorageProvider);
 ```
 
 ```dart
-final localStorage =
-    ref.read(localStorageProvider);
+final localStorage = ref.read(localStorageProvider);
 ```
 
 ---
@@ -264,13 +303,24 @@ final localStorage =
 SharedPreferences
 ```
 
-저장 Key
+---
+
+## 저장 Key
 
 ```txt
-PROFILE_ICON
+PROFILE_ICON_<loginId>
 ```
 
-저장 값
+예시
+
+```txt
+PROFILE_ICON_stu101@foxedu.kr
+PROFILE_ICON_tea101@foxedu.kr
+```
+
+---
+
+## 저장 값
 
 ```txt
 assets/icons/profile/satisfaction.svg
@@ -282,9 +332,12 @@ assets/icons/profile/satisfaction.svg
 
 ```txt
 아이콘 선택
-→ ProfileIconController
-→ LocalStorage.writeProfileIcon()
-→ SharedPreferences 저장
+↓
+ProfileIconController
+↓
+LocalStorage.writeProfileIcon()
+↓
+SharedPreferences 저장
 ```
 
 ---
@@ -293,10 +346,14 @@ assets/icons/profile/satisfaction.svg
 
 ```txt
 앱 실행
-→ ProfileIconController.initialize()
-→ LocalStorage.readProfileIcon()
-→ SharedPreferences 조회
-→ 화면 표시
+↓
+ProfileIconController.initialize()
+↓
+LocalStorage.readProfileIcon()
+↓
+SharedPreferences 조회
+↓
+화면 표시
 ```
 
 ---
@@ -309,17 +366,22 @@ assets/icons/profile/satisfaction.svg
 SharedPreferences
 ```
 
-저장 Key
+---
+
+## 저장 Key
 
 ```txt
 APP_THEME_MODE
 ```
 
-저장 값
+---
+
+## 저장 값
 
 ```txt
 light
 dark
+system
 ```
 
 ---
@@ -328,9 +390,12 @@ dark
 
 ```txt
 다크모드 선택
-→ ThemeController
-→ LocalStorage.writeThemeMode('dark')
-→ SharedPreferences 저장
+↓
+ThemeController
+↓
+LocalStorage.writeThemeMode()
+↓
+SharedPreferences 저장
 ```
 
 ---
@@ -338,10 +403,13 @@ dark
 ## 복원 흐름
 
 ```txt
-앱 시작
-→ ThemeController.initialize()
-→ APP_THEME_MODE 조회
-→ ThemeMode 적용
+앱 실행
+↓
+ThemeController.initialize()
+↓
+APP_THEME_MODE 조회
+↓
+ThemeMode 적용
 ```
 
 ---
@@ -354,12 +422,23 @@ dark
 FlutterSecureStorage
 ```
 
-저장 Key
+---
+
+## 저장 데이터
 
 ```txt
-accessToken
-refreshToken
-username
+ACCESS_TOKEN
+REFRESH_TOKEN
+AUTO_LOGIN
+
+USER_ID
+USER_NM
+LOGIN_ID
+EMAIL
+INSTT_ID
+INSTT_NM
+INSTT_TY
+USER_SE_CD
 ```
 
 ---
@@ -368,8 +447,12 @@ username
 
 ```txt
 로그인 성공
-→ AuthStorage.writeTokens()
-→ FlutterSecureStorage 저장
+↓
+AuthController.login()
+↓
+AuthStorage.writeLoginInfo()
+↓
+FlutterSecureStorage 저장
 ```
 
 ---
@@ -377,10 +460,78 @@ username
 ## 복원 흐름
 
 ```txt
-앱 시작
-→ AuthController
-→ AuthStorage.readTokens()
-→ 인증 상태 복원
+앱 실행
+↓
+AuthController.initialize()
+↓
+AuthStorage.readLoginInfo()
+↓
+AuthState 복원
+```
+
+---
+
+# Dio 인증 처리 구조
+
+## 역할
+
+API 요청 시 인증 헤더를 자동 추가한다.
+
+---
+
+## 동작 흐름
+
+```txt
+API 요청
+↓
+Dio Interceptor
+↓
+AuthStorage.readTokens()
+↓
+Authorization Header 추가
+↓
+서버 요청
+```
+
+---
+
+## 인증 헤더 예시
+
+```http
+Authorization: Bearer xxxxxxxxx
+Refresh-Token: xxxxxxxxx
+```
+
+---
+
+## 로그인 API
+
+로그인 API는 인증 없이 호출한다.
+
+```dart
+Options(
+  headers: {
+    'noAuth': true,
+  },
+)
+```
+
+---
+
+## 일반 API
+
+감정체크, 프로필 조회 등 로그인 이후 API는 인증 헤더가 자동 추가된다.
+
+```txt
+EmotionRepository
+↓
+dio.post()
+↓
+Interceptor
+↓
+Authorization 추가
+↓
+API 호출
 ```
 
 ---
@@ -392,9 +543,11 @@ username
 다음 데이터는 반드시 SecureStorage 사용
 
 ```txt
-accessToken
-refreshToken
+ACCESS_TOKEN
+REFRESH_TOKEN
 JWT
+AUTO_LOGIN
+사용자 정보
 인증 관련 정보
 ```
 
@@ -422,13 +575,14 @@ JWT
 
 ```dart
 authStorage.writeTokens(...)
+authStorage.writeLoginInfo(...)
 ```
 
 비허용
 
 ```dart
 SharedPreferences.setString(
-  'accessToken',
+  'ACCESS_TOKEN',
   token,
 );
 ```
@@ -469,10 +623,13 @@ FlutterSecureStorage.write(
 
 ```txt
 AuthStorage
-→ 인증 전용
+→ 인증 및 사용자 정보 전용
 
 LocalStorage
-→ 설정 전용
+→ 설정 및 UI 상태 전용
+
+Dio
+→ AuthStorage를 통해 인증 헤더 자동 주입
 ```
 
-구조를 유지하며 개발한다.
+위 구조를 기준으로 인증 및 저장소 기능을 개발한다.
