@@ -58,7 +58,7 @@ class EmotionRepository {
     required int step,
   }) async {
     final response = await _dio.post<Map<String, dynamic>>(
-      'user/teacher/emotion/regist',
+      'user/teacher/emotion/rgst',
       data: {'emtSeId': emotionId, 'emtStep': step},
     );
 

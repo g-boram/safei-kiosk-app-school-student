@@ -172,6 +172,11 @@ class _EmotionLevelScreenState extends ConsumerState<EmotionLevelScreen> {
                           : () {
                               context.pop();
                             },
+                      style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
                       child: const Text('감정 다시 선택'),
                     ),
                   ),
